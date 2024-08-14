@@ -1,6 +1,7 @@
 from src.models.address_book import AddressBook
 from src.services.console_text_designer import ConsoleTextDesigner
 from src.services.validator import validate_user_name, validate_phone_number
+import pickle
 
 
 class App:
@@ -9,7 +10,9 @@ class App:
         pass
 
     def run(self):
-        book = AddressBook()  # TODO create separate method for load_data()
+        book = load_data("addressbook.pkl") or AddressBook()
+        notebook = load_data("notebook.pkl") or Notebook() # Class will be added with note task
+         
         console_text_designer = ConsoleTextDesigner()
 
         console_text_designer.print_info("Welcome to the assistant bot!")
@@ -47,6 +50,8 @@ class App:
             print(output)
 
         # TODO: save_data(book)
+        save_data(book, "addressbook.pkl")
+        save_data(notebook, "notebook.pkl") # variable will be added with note task
 
 
 def fill_new():  # TODO: move to separate method
@@ -86,3 +91,17 @@ def parse_input(user_input):
     cmd, *args = user_input.split()
     cmd = cmd.strip().lower()
     return cmd, *args
+
+
+def save_data(data, filename):
+    with open(filename, "wb", encoding="utf-8") as f:
+        return pickle.dump(data, f)
+    
+
+def load_data(filename):
+    try:
+        with open(filename, "rb", encoding="utf-8") as f:
+            pickle.load(f)
+    except FileNotFoundError:
+        return None
+
